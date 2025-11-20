@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { clientSupabase } from "@/lib/supabase/client";
@@ -31,7 +31,8 @@ interface Category {
 type ViewMode = "grid-3" | "grid-4" | "list";
 type SortBy = "newest" | "price-asc" | "price-desc" | "popular";
 
-export default function ProductsPage() {
+// useSearchParams kullanan ana component'i ayırdık
+function ProductsContent() {
   const searchParams = useSearchParams();
   const addItem = useCartStore((state) => state.addItem);
 
@@ -479,6 +480,25 @@ export default function ProductsPage() {
         />
       )}
     </main>
+  );
+}
+
+// Ana sayfa componenti - Suspense ile sarmalanmış
+export default function ProductsPage() {
+  return (
+    <Suspense fallback={
+      <main className="min-h-screen bg-white pt-24">
+        <div className="container mx-auto px-4 py-12">
+          <div className="mb-12 animate-pulse">
+            <div className="h-12 bg-slate-200 rounded w-64 mb-4"></div>
+            <div className="h-6 bg-slate-200 rounded w-96"></div>
+          </div>
+          <ProductGridSkeleton count={8} />
+        </div>
+      </main>
+    }>
+      <ProductsContent />
+    </Suspense>
   );
 }
 
