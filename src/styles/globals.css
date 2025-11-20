@@ -1,0 +1,268 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Dancing+Script:wght@400;500;600;700&display=swap');
+
+@import "tailwindcss";
+
+/* Custom Styles */
+body {
+  font-family: 'Poppins', sans-serif;
+}
+
+.font-script {
+  font-family: 'Dancing Script', cursive;
+}
+
+/* Premium Button Styles */
+.btn-primary {
+  background: linear-gradient(to right, rgb(168 85 247), rgb(232 121 249));
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 9999px;
+  font-weight: 500;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s;
+}
+
+.btn-primary:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 20px rgba(168, 85, 247, 0.4);
+}
+
+.btn-secondary {
+  background: white;
+  color: rgb(168 85 247);
+  padding: 0.75rem 1.5rem;
+  border-radius: 9999px;
+  font-weight: 500;
+  border: 2px solid rgb(233 213 255);
+  transition: all 0.3s;
+}
+
+.btn-secondary:hover {
+  border-color: rgb(216 180 254);
+  box-shadow: 0 2px 15px -3px rgba(0, 0, 0, 0.07);
+}
+
+.btn-gold {
+  background: linear-gradient(to right, #D4AF37, #B8941E);
+  color: #1e293b;
+  padding: 0.75rem 1.5rem;
+  border-radius: 9999px;
+  font-weight: 600;
+  box-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
+  transition: all 0.3s;
+}
+
+.btn-gold:hover {
+  transform: scale(1.05);
+}
+
+/* Card Premium */
+.card-premium {
+  background: white;
+  border-radius: 1.5rem;
+  box-shadow: 0 2px 15px -3px rgba(0, 0, 0, 0.07);
+  transition: all 0.5s;
+  overflow: hidden;
+  border: 1px solid rgb(250 245 255);
+}
+
+.card-premium:hover {
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+/* Badges */
+.badge {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  backdrop-filter: blur(8px);
+}
+
+.badge-new {
+  background: linear-gradient(to right, rgb(74 222 128), rgb(34 197 94));
+  color: white;
+}
+
+.badge-featured {
+  background: linear-gradient(to right, #F4E4B7, #D4AF37);
+  color: #1e293b;
+}
+
+.badge-sale {
+  background: linear-gradient(to right, rgb(232 121 249), rgb(217 70 239));
+  color: white;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { 
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to { 
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes scaleIn {
+  from { 
+    transform: scale(0.95);
+    opacity: 0;
+  }
+  to { 
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+.animate-slide-up {
+  animation: slideUp 0.5s ease-out;
+}
+
+.animate-scale-in {
+  animation: scaleIn 0.3s ease-out;
+}
+
+/* Smooth transitions */
+* {
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+/* Loading button state */
+.btn-loading {
+  position: relative;
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+.btn-loading::after {
+  content: "";
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  top: 50%;
+  left: 50%;
+  margin-left: -8px;
+  margin-top: -8px;
+  border: 2px solid transparent;
+  border-top-color: currentColor;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Fade in animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.5s ease-out;
+}
+
+/* Slide in from right */
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-slideInRight {
+  animation: slideInRight 0.3s ease-out;
+}
+
+/* Smooth transitions */
+* {
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+
+/* Keskin hatlar için override */
+.sharp-design {
+  border-radius: 0.75rem !important; /* rounded-xl yerine */
+}
+
+/* Button'lar için keskin stil */
+.btn-primary,
+.btn-secondary {
+  border-radius: 0.75rem !important;
+  font-weight: 700;
+  letter-spacing: 0.025em;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+/* Kartlar için keskin köşeler */
+.card {
+  border-radius: 1rem !important;
+  border-width: 1px;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+}
+
+/* Input'lar için */
+input,
+textarea,
+select {
+  border-radius: 0.75rem !important;
+  border-width: 2px;
+}
+
+/* Daha bold font weights */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 700;
+  letter-spacing: -0.025em;
+}
+
+/* Input text contrast fix */
+input[type="text"],
+input[type="email"],
+input[type="tel"],
+input[type="number"],
+input[type="search"],
+textarea,
+select {
+  color: #000000 !important; /* slate-900 */
+  font-weight: 600;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #0e0f0f !important; /* slate-400 */
+  font-weight: 400;
+}
+
+/* Checkbox ve radio daha belirgin */
+input[type="checkbox"],
+input[type="radio"] {
+  accent-color: #09080a; /* purple-600 */
+  width: 18px;
+  height: 18px;
+}

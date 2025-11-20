@@ -1,0 +1,13 @@
+# https://www.robotstxt.org/robotstxt.html
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://polencicek.com/sitemap.xml
+
+# Admin paneli engelle
+Disallow: /admin/
+Disallow: /auth/
+
+# API engelle
+Disallow: /api/

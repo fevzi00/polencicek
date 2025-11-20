@@ -24,3 +24,17 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+/* Tüm linklere cursor pointer */
+a, button, [role="button"] {
+  cursor: pointer;
+}
+
+/* Disabled butonlar için */
+button:disabled, a:disabled {
+  cursor: not-allowed;
+}
+
+/* Tıklanabilir kartlar */
+.group, [class*="hover:"] {
+  cursor: pointer;
+}
