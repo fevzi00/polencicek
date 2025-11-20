@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { Suspense, useState, useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { clientSupabase } from "@/lib/supabase/client";
@@ -14,9 +14,11 @@ interface Product {
   price: number;
   images: string[];
   is_active: boolean;
+  stock: number | null;
 }
 
-export default function SearchPage() {
+// useSearchParams kullanan component'i ayırdık
+function SearchContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const query = searchParams.get("q") || "";
@@ -145,6 +147,7 @@ export default function SearchPage() {
             <div className="text-6xl mb-4">🔍</div>
             <h2 className="text-2xl font-bold text-slate-900 mb-2">
               Ürün Arayın
+              
             </h2>
             <p className="text-slate-600 mb-6">
               Yukarıdaki arama kutusundan ürün arayabilirsiniz
@@ -153,5 +156,22 @@ export default function SearchPage() {
         )}
       </div>
     </main>
+  );
+}
+
+// Ana sayfa componenti - Suspense ile sarmalanmış
+export default function SearchPage() {
+  return (
+    <Suspense fallback={
+      <main className="min-h-screen bg-white pt-24">
+        <div className="container mx-auto px-4 py-12">
+          <div className="flex items-center justify-center py-20">
+            <div className="w-16 h-16 border-4 border-purple-200 border-t-purple-600 rounded-full animate-spin"></div>
+          </div>
+        </div>
+      </main>
+    }>
+      <SearchContent />
+    </Suspense>
   );
 }
