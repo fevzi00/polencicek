@@ -1,9 +1,10 @@
 "use client";
 
+import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 
-export default function CheckoutErrorPage() {
+function ErrorContent() {
   const searchParams = useSearchParams();
   const message = searchParams.get("message") || "Ödeme işlemi başarısız oldu";
 
@@ -35,5 +36,17 @@ export default function CheckoutErrorPage() {
         </div>
       </div>
     </main>
+  );
+}
+
+export default function CheckoutErrorPage() {
+  return (
+    <Suspense fallback={
+      <main className="min-h-screen bg-white pt-24 flex items-center justify-center">
+        <div className="w-16 h-16 border-4 border-purple-200 border-t-purple-600 rounded-full animate-spin"></div>
+      </main>
+    }>
+      <ErrorContent />
+    </Suspense>
   );
 }
