@@ -1,134 +1,192 @@
+import type { Metadata } from "next";
+import Link from "next/link";
+
+export const metadata: Metadata = {
+  title: "Kullanım Şartları",
+  description: "Polen Çiçek web sitesi kullanım şartları ve koşulları",
+};
+
 export default function TermsPage() {
   return (
-    <main className="min-h-screen bg-gradient-to-b from-white to-purple-50/30 pt-24">
-      <div className="container mx-auto px-4 py-12">
-        <div className="max-w-4xl mx-auto">
-          <div className="bg-white rounded-3xl p-8 md:p-12 shadow-lg border border-slate-100">
-            <h1 className="text-4xl md:text-5xl font-bold text-slate-900 mb-6">
-              Kullanım Koşulları
-            </h1>
-            <p className="text-slate-600 mb-8">
-              Son güncellenme: {new Date().toLocaleDateString('tr-TR', { year: 'numeric', month: 'long', day: 'numeric' })}
-            </p>
-
-            <div className="prose prose-slate max-w-none space-y-6">
-              <section>
-                <h2 className="text-2xl font-bold text-slate-900 mb-4">1. Genel Hükümler</h2>
-                <p className="text-slate-700 leading-relaxed">
-                  Bu web sitesini kullanarak, aşağıdaki kullanım koşullarını kabul etmiş sayılırsınız. 
-                  Bu koşulları kabul etmiyorsanız, lütfen sitemizi kullanmayın. Polen Çiçek, bu koşulları 
-                  önceden haber vermeksizin değiştirme hakkını saklı tutar.
-                </p>
-              </section>
-
-              <section>
-                <h2 className="text-2xl font-bold text-slate-900 mb-4">2. Hizmet Kapsamı</h2>
-                <p className="text-slate-700 leading-relaxed mb-3">
-                  Polen Çiçek, taze çiçek satışı ve teslimat hizmeti sunmaktadır. Hizmetlerimiz:
-                </p>
-                <ul className="list-disc list-inside space-y-2 text-slate-700 ml-4">
-                  <li>Online sipariş ve ödeme imkanı</li>
-                  <li>Konya Ereğli içi teslimat</li>
-                  <li>Aynı gün veya ileri tarihli teslimat seçenekleri</li>
-                  <li>Özel tasarım buket hizmetleri</li>
-                  <li>Hediye mesajı ekleme</li>
-                </ul>
-              </section>
-
-              <section>
-                <h2 className="text-2xl font-bold text-slate-900 mb-4">3. Sipariş ve Ödeme</h2>
-                <p className="text-slate-700 leading-relaxed">
-                  Sipariş verdiğinizde, ürün fiyatı, teslimat ücreti (varsa) ve toplam tutarı onaylamış 
-                  olursunuz. Tüm ödemeler güvenli SSL sertifikalı sistemler üzerinden yapılır. Sipariş 
-                  sonrası onay e-postası veya SMS gönderilir. Stok durumuna göre siparişinizin kabulü 
-                  veya reddi hakkımız saklıdır.
-                </p>
-              </section>
-
-              <section>
-                <h2 className="text-2xl font-bold text-slate-900 mb-4">4. Teslimat</h2>
-                <p className="text-slate-700 leading-relaxed mb-3">
-                  Teslimat koşullarımız:
-                </p>
-                <ul className="list-disc list-inside space-y-2 text-slate-700 ml-4">
-                  <li>Saat 14:00'e kadar verilen siparişler aynı gün teslim edilir</li>
-                  <li>14:00'dan sonraki siparişler ertesi gün teslim edilir</li>
-                  <li>Teslimat adresi Konya Ereğli sınırları içinde olmalıdır</li>
-                  <li>Teslimat saatini belirtebilirsiniz (garanti verilmez, en yakın zaman dilimi hedeflenir)</li>
-                  <li>Alıcıya ulaşılamazsa, sipariş veren ile iletişime geçilir</li>
-                </ul>
-              </section>
-
-              <section>
-                <h2 className="text-2xl font-bold text-slate-900 mb-4">5. İptal ve İade</h2>
-                <p className="text-slate-700 leading-relaxed">
-                  Taze ürün olması nedeniyle, hazırlanmış siparişlerde iade kabul edilmez. Ancak:
-                </p>
-                <ul className="list-disc list-inside space-y-2 text-slate-700 ml-4 mt-3">
-                  <li>Henüz hazırlanmamış siparişler 0545 672 63 17 numaralı telefondan iptal edilebilir</li>
-                  <li>Ürün hasarlı veya eksik teslim edilirse, 24 saat içinde bildirim yapılması halinde ücretsiz değişim yapılır</li>
-                  <li>Yanlış ürün teslimi durumunda tam iade veya değişim yapılır</li>
-                  <li>Tazelik sorunu olan ürünler için fotoğraf ile bildirim yapılmalıdır</li>
-                </ul>
-              </section>
-
-              <section>
-                <h2 className="text-2xl font-bold text-slate-900 mb-4">6. Fikri Mülkiyet Hakları</h2>
-                <p className="text-slate-700 leading-relaxed">
-                  Bu web sitesindeki tüm içerik, görseller, logolar ve tasarımlar Polen Çiçek'e aittir 
-                  ve telif hakkı yasaları ile korunmaktadır. İzinsiz kullanım, kopyalama veya dağıtım 
-                  yasaktır.
-                </p>
-              </section>
-
-              <section>
-                <h2 className="text-2xl font-bold text-slate-900 mb-4">7. Sorumluluk Sınırlaması</h2>
-                <p className="text-slate-700 leading-relaxed">
-                  Polen Çiçek, doğal afetler, elektrik kesintileri, internet bağlantı sorunları veya 
-                  diğer beklenmedik durumlar nedeniyle oluşabilecek gecikmelerden sorumlu tutulamaz. 
-                  Çiçeklerin doğal ürün olması nedeniyle, görsellerdeki renkler ve şekiller gerçek 
-                  üründe küçük farklılıklar gösterebilir.
-                </p>
-              </section>
-
-              <section>
-                <h2 className="text-2xl font-bold text-slate-900 mb-4">8. Kişisel Verilerin Korunması</h2>
-                <p className="text-slate-700 leading-relaxed">
-                  Kişisel verileriniz, Gizlilik Politikamız doğrultusunda işlenir ve korunur. 
-                  Detaylı bilgi için Gizlilik Politikası sayfamızı inceleyebilirsiniz.
-                </p>
-              </section>
-
-              <section>
-                <h2 className="text-2xl font-bold text-slate-900 mb-4">9. Uyuşmazlık Çözümü</h2>
-                <p className="text-slate-700 leading-relaxed">
-                  Bu kullanım koşullarından doğabilecek uyuşmazlıklarda, Türkiye Cumhuriyeti yasaları 
-                  geçerlidir. Uyuşmazlıkların çözümünde Konya Mahkemeleri ve İcra Daireleri yetkilidir.
-                </p>
-              </section>
-
-              <section>
-                <h2 className="text-2xl font-bold text-slate-900 mb-4">10. İletişim</h2>
-                <p className="text-slate-700 leading-relaxed">
-                  Kullanım koşulları hakkında sorularınız için:
-                </p>
-                <div className="mt-4 p-4 bg-purple-50 rounded-xl">
-                  <p className="text-slate-900 font-semibold">Polen Çiçek</p>
-                  <p className="text-slate-700">Hacı Mütahir mah, Dr. Rauf Denktaş Cd. No:5, 42320 Ereğli/Konya</p>
-                  <p className="text-slate-700">Telefon: 0545 672 63 17</p>
-                </div>
-              </section>
-            </div>
-
-            <div className="mt-12 pt-8 border-t border-slate-200 flex flex-col sm:flex-row gap-4 justify-center">
-              <a href="/privacy" className="btn-secondary px-8 py-4">
-                Gizlilik Politikası
-              </a>
-              <a href="/contact" className="btn-primary px-8 py-4">
-                Bize Ulaşın
-              </a>
-            </div>
+    <main className="min-h-screen bg-white pt-24">
+      <div className="container mx-auto px-4 py-12 max-w-4xl">
+        {/* Breadcrumb */}
+        <div className="mb-8">
+          <div className="flex items-center gap-2 text-sm text-slate-600">
+            <Link href="/" className="hover:text-purple-600">Ana Sayfa</Link>
+            <span>/</span>
+            <span className="text-slate-900 font-semibold">Kullanım Şartları</span>
           </div>
+        </div>
+
+        <h1 className="text-4xl font-bold text-slate-900 mb-8">
+          Kullanım Şartları
+        </h1>
+
+        <div className="prose prose-lg max-w-none">
+          <section className="mb-8">
+            <h2 className="text-2xl font-bold text-slate-900 mb-4">1. Genel Hükümler</h2>
+            <p className="text-slate-700 mb-4">
+              Bu web sitesini (polencicek.com) kullanarak, aşağıda belirtilen 
+              kullanım şartlarını kabul etmiş sayılırsınız. Bu şartları kabul 
+              etmiyorsanız, lütfen sitemizi kullanmayınız.
+            </p>
+            <p className="text-slate-700 mb-4">
+              Polen Çiçek, bu kullanım şartlarını önceden haber vermeksizin 
+              değiştirme hakkını saklı tutar. Güncel şartları düzenli olarak 
+              kontrol etmeniz önerilir.
+            </p>
+          </section>
+
+          <section className="mb-8">
+            <h2 className="text-2xl font-bold text-slate-900 mb-4">2. Hizmet Kapsamı</h2>
+            <p className="text-slate-700 mb-4">
+              Polen Çiçek, Konya Ereğli bölgesinde çiçek ve hediye ürünlerinin 
+              online satışı ve teslimatını gerçekleştirmektedir. Hizmetlerimiz:
+            </p>
+            <ul className="list-disc pl-6 text-slate-700 space-y-2">
+              <li>Taze çiçek satışı ve teslimatı</li>
+              <li>Özel günler için çiçek düzenlemeleri</li>
+              <li>Kurumsal çiçek hizmetleri</li>
+              <li>Hediye ürünleri</li>
+            </ul>
+          </section>
+
+          <section className="mb-8">
+            <h2 className="text-2xl font-bold text-slate-900 mb-4">3. Üyelik ve Hesap</h2>
+            <p className="text-slate-700 mb-4">
+              Web sitemizden alışveriş yapmak için üye olmanız gerekmektedir. 
+              Üyelik sırasında:
+            </p>
+            <ul className="list-disc pl-6 text-slate-700 space-y-2">
+              <li>Doğru ve güncel bilgiler vermelisiniz</li>
+              <li>Hesap güvenliğinizden siz sorumlusunuz</li>
+              <li>Şifrenizi kimseyle paylaşmamalısınız</li>
+              <li>Hesabınızda yapılan tüm işlemlerden sorumlusunuz</li>
+              <li>18 yaşından büyük olmalısınız</li>
+            </ul>
+          </section>
+
+          <section className="mb-8">
+            <h2 className="text-2xl font-bold text-slate-900 mb-4">4. Sipariş ve Ödeme</h2>
+            <p className="text-slate-700 mb-4">
+              Sipariş verirken aşağıdaki kurallara uymanız gerekmektedir:
+            </p>
+            <ul className="list-disc pl-6 text-slate-700 space-y-2">
+              <li>Ürün fiyatları KDV dahildir</li>
+              <li>Teslimat ücretleri ödeme sayfasında gösterilir</li>
+              <li>Ödeme onaylandıktan sonra sipariş işleme alınır</li>
+              <li>Stok durumuna göre bazı ürünler temin edilemeyebilir</li>
+              <li>Fiyatlar önceden haber verilmeksizin değiştirilebilir</li>
+            </ul>
+          </section>
+
+          <section className="mb-8">
+            <h2 className="text-2xl font-bold text-slate-900 mb-4">5. Teslimat</h2>
+            <p className="text-slate-700 mb-4">
+              Teslimat koşulları:
+            </p>
+            <ul className="list-disc pl-6 text-slate-700 space-y-2">
+              <li>Teslimat alanımız Konya Ereğli ve çevresidir</li>
+              <li>Teslimat süreleri sipariş saatine göre değişebilir</li>
+              <li>Acil siparişler için ek ücret alınabilir</li>
+              <li>Hava koşulları teslimat süresini etkileyebilir</li>
+              <li>Alıcı adreste bulunmazsa, ürün komşu veya kapıcıya teslim edilebilir</li>
+            </ul>
+          </section>
+
+          <section className="mb-8">
+            <h2 className="text-2xl font-bold text-slate-900 mb-4">6. İptal ve İade</h2>
+            <p className="text-slate-700 mb-4">
+              Taze çiçek ürünleri özel nitelikli ürün olduğundan:
+            </p>
+            <ul className="list-disc pl-6 text-slate-700 space-y-2">
+              <li>Teslimat yapılmadan önce sipariş iptal edilebilir</li>
+              <li>Teslim edilen ürünlerde cayma hakkı bulunmamaktadır</li>
+              <li>Ürün hasarlı veya eksik gelirse 24 saat içinde bildirim yapılmalıdır</li>
+              <li>Haklı sebeplerle iade durumlarında değerlendirme yapılır</li>
+            </ul>
+          </section>
+
+          <section className="mb-8">
+            <h2 className="text-2xl font-bold text-slate-900 mb-4">7. Fikri Mülkiyet Hakları</h2>
+            <p className="text-slate-700 mb-4">
+              Web sitemizdeki tüm içerik (metin, görsel, logo, tasarım vb.) 
+              Polen Çiçek'e aittir ve fikri mülkiyet hakları ile korunmaktadır.
+            </p>
+            <ul className="list-disc pl-6 text-slate-700 space-y-2">
+              <li>İçerikler izinsiz kopyalanamaz</li>
+              <li>Görseller izinsiz kullanılamaz</li>
+              <li>Site tasarımı taklit edilemez</li>
+              <li>Ticari amaçla kullanılamaz</li>
+            </ul>
+          </section>
+
+          <section className="mb-8">
+            <h2 className="text-2xl font-bold text-slate-900 mb-4">8. Yasaklı Kullanımlar</h2>
+            <p className="text-slate-700 mb-4">
+              Web sitemizi kullanırken aşağıdaki eylemler yasaktır:
+            </p>
+            <ul className="list-disc pl-6 text-slate-700 space-y-2">
+              <li>Sahte bilgi vermek</li>
+              <li>Başkalarının hesaplarını kullanmak</li>
+              <li>Sisteme zarar verici faaliyetlerde bulunmak</li>
+              <li>Spam veya zararlı içerik göndermek</li>
+              <li>Otomatik sistemlerle veri toplamak</li>
+              <li>Site güvenliğini tehdit etmek</li>
+            </ul>
+          </section>
+
+          <section className="mb-8">
+            <h2 className="text-2xl font-bold text-slate-900 mb-4">9. Sorumluluk Sınırlaması</h2>
+            <p className="text-slate-700 mb-4">
+              Polen Çiçek, aşağıdaki durumlardan sorumlu tutulamaz:
+            </p>
+            <ul className="list-disc pl-6 text-slate-700 space-y-2">
+              <li>Mücbir sebeplerden kaynaklanan gecikmeler</li>
+              <li>Üçüncü taraf hizmet sağlayıcılardan kaynaklanan sorunlar</li>
+              <li>Kullanıcı hatasından kaynaklanan problemler</li>
+              <li>İnternet bağlantısından kaynaklanan kesintiler</li>
+              <li>Yanlış adres bilgisinden kaynaklanan teslimat sorunları</li>
+            </ul>
+          </section>
+
+          <section className="mb-8">
+            <h2 className="text-2xl font-bold text-slate-900 mb-4">10. Uyuşmazlık Çözümü</h2>
+            <p className="text-slate-700 mb-4">
+              Bu kullanım şartlarından doğabilecek uyuşmazlıklarda:
+            </p>
+            <ul className="list-disc pl-6 text-slate-700 space-y-2">
+              <li>Öncelikle dostane çözüm aranır</li>
+              <li>Tüketici hakem heyetlerine başvurulabilir</li>
+              <li>Konya Ereğli Mahkemeleri ve İcra Daireleri yetkilidir</li>
+              <li>Türkiye Cumhuriyeti yasaları uygulanır</li>
+            </ul>
+          </section>
+
+          <section className="mb-8">
+            <h2 className="text-2xl font-bold text-slate-900 mb-4">11. İletişim</h2>
+            <p className="text-slate-700 mb-4">
+              Kullanım şartlarıyla ilgili sorularınız için:
+            </p>
+            <div className="bg-purple-50 p-6 rounded-xl">
+              <p className="text-slate-700 mb-2">
+                <strong>E-posta:</strong> info@polencicek.com
+              </p>
+              <p className="text-slate-700 mb-2">
+                <strong>Telefon:</strong> +90 545 672 6317
+              </p>
+              <p className="text-slate-700">
+                <strong>Adres:</strong> Konya Ereğli, Türkiye
+              </p>
+            </div>
+          </section>
+
+          <section className="mb-8">
+            <p className="text-sm text-slate-600 italic">
+              Son güncelleme: {new Date().toLocaleDateString('tr-TR', { year: 'numeric', month: 'long', day: 'numeric' })}
+            </p>
+          </section>
         </div>
       </div>
     </main>

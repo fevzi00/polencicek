@@ -65,28 +65,38 @@ export function Footer() {
             </ul>
           </div>
 
-          {/* Categories */}
+          {/* Yasal - YENİ BÖLÜM */}
           <div>
-            <h4 className="text-lg font-semibold mb-6">Kategoriler</h4>
+            <h4 className="text-lg font-semibold mb-6">Yasal</h4>
             <ul className="space-y-3">
               <li>
-                <Link href="/products" className="text-gray-400 hover:text-white transition-colors">
-                  Buketler
+                <Link href="/privacy" className="text-gray-400 hover:text-white transition-colors">
+                  Gizlilik Politikası
                 </Link>
               </li>
               <li>
-                <Link href="/products" className="text-gray-400 hover:text-white transition-colors">
-                  Aranjmanlar
+                <Link href="/kvkk" className="text-gray-400 hover:text-white transition-colors">
+                  KVKK
                 </Link>
               </li>
               <li>
-                <Link href="/products" className="text-gray-400 hover:text-white transition-colors">
-                  Orkideler
+                <Link href="/terms" className="text-gray-400 hover:text-white transition-colors">
+                  Kullanım Şartları
                 </Link>
               </li>
               <li>
-                <Link href="/products" className="text-gray-400 hover:text-white transition-colors">
-                  Özel Tasarımlar
+                <Link href="/sales-agreement" className="text-gray-400 hover:text-white transition-colors">
+                  Mesafeli Satış Sözleşmesi
+                </Link>
+              </li>
+              <li>
+                <Link href="/refund" className="text-gray-400 hover:text-white transition-colors">
+                  İptal ve İade
+                </Link>
+              </li>
+              <li>
+                <Link href="/cookies" className="text-gray-400 hover:text-white transition-colors">
+                  Çerez Politikası
                 </Link>
               </li>
             </ul>
@@ -127,15 +137,24 @@ export function Footer() {
               &copy; {currentYear} Polen Çiçek. Tüm hakları saklıdır.
             </div>
             
-            <div className="flex items-center gap-6">
+            <div className="flex flex-wrap items-center justify-center gap-4 md:gap-6">
               <Link href="/privacy" className="hover:text-white transition-colors">
-                Gizlilik Politikası
+                Gizlilik
+              </Link>
+              <Link href="/kvkk" className="hover:text-white transition-colors">
+                KVKK
               </Link>
               <Link href="/terms" className="hover:text-white transition-colors">
-                Kullanım Koşulları
+                Kullanım Şartları
               </Link>
-              <Link href="/faq" className="hover:text-white transition-colors">
-                SSS
+              <Link href="/sales-agreement" className="hover:text-white transition-colors">
+                Satış Sözleşmesi
+              </Link>
+              <Link href="/refund" className="hover:text-white transition-colors">
+                İptal & İade
+              </Link>
+              <Link href="/cookies" className="hover:text-white transition-colors">
+                Çerezler
               </Link>
             </div>
           </div>

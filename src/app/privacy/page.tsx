@@ -1,125 +1,173 @@
+import type { Metadata } from "next";
+import Link from "next/link";
+
+export const metadata: Metadata = {
+  title: "Gizlilik Politikası",
+  description: "Polen Çiçek Gizlilik Politikası ve Kişisel Verilerin Korunması",
+};
+
 export default function PrivacyPage() {
   return (
-    <main className="min-h-screen bg-gradient-to-b from-white to-purple-50/30 pt-24">
-      <div className="container mx-auto px-4 py-12">
-        <div className="max-w-4xl mx-auto">
-          <div className="bg-white rounded-3xl p-8 md:p-12 shadow-lg border border-slate-100">
-            <h1 className="text-4xl md:text-5xl font-bold text-slate-900 mb-6">
-              Gizlilik Politikası
-            </h1>
-            <p className="text-slate-600 mb-8">
-              Son güncellenme: {new Date().toLocaleDateString('tr-TR', { year: 'numeric', month: 'long', day: 'numeric' })}
-            </p>
-
-            <div className="prose prose-slate max-w-none space-y-6">
-              <section>
-                <h2 className="text-2xl font-bold text-slate-900 mb-4">1. Genel Bilgiler</h2>
-                <p className="text-slate-700 leading-relaxed">
-                  Polen Çiçek olarak, müşterilerimizin kişisel verilerinin gizliliğine önem veriyoruz. 
-                  Bu gizlilik politikası, web sitemizi ziyaret ettiğinizde veya hizmetlerimizi kullandığınızda 
-                  toplanan kişisel verilerinizin nasıl işlendiğini açıklamaktadır.
-                </p>
-              </section>
-
-              <section>
-                <h2 className="text-2xl font-bold text-slate-900 mb-4">2. Toplanan Bilgiler</h2>
-                <p className="text-slate-700 leading-relaxed mb-3">
-                  Hizmetlerimizi kullanırken aşağıdaki bilgileri toplayabiliriz:
-                </p>
-                <ul className="list-disc list-inside space-y-2 text-slate-700 ml-4">
-                  <li>Ad, soyad ve iletişim bilgileri (telefon, e-posta)</li>
-                  <li>Teslimat adresi bilgileri</li>
-                  <li>Sipariş geçmişi ve tercihler</li>
-                  <li>Ödeme bilgileri (güvenli ödeme sistemleri aracılığıyla)</li>
-                  <li>Web sitesi kullanım bilgileri (çerezler aracılığıyla)</li>
-                </ul>
-              </section>
-
-              <section>
-                <h2 className="text-2xl font-bold text-slate-900 mb-4">3. Bilgilerin Kullanımı</h2>
-                <p className="text-slate-700 leading-relaxed mb-3">
-                  Topladığımız kişisel veriler aşağıdaki amaçlarla kullanılır:
-                </p>
-                <ul className="list-disc list-inside space-y-2 text-slate-700 ml-4">
-                  <li>Siparişlerinizi işleme almak ve teslimat yapmak</li>
-                  <li>Müşteri hizmetleri desteği sağlamak</li>
-                  <li>Ürün ve hizmetlerimizi geliştirmek</li>
-                  <li>Kampanya ve özel teklifler hakkında bilgilendirme yapmak (onay vermeniz halinde)</li>
-                  <li>Yasal yükümlülüklerimizi yerine getirmek</li>
-                </ul>
-              </section>
-
-              <section>
-                <h2 className="text-2xl font-bold text-slate-900 mb-4">4. Bilgi Güvenliği</h2>
-                <p className="text-slate-700 leading-relaxed">
-                  Kişisel verilerinizin güvenliği bizim için önceliklidir. Verilerinizi yetkisiz erişim, 
-                  değişiklik, ifşa veya imha edilmeye karşı korumak için uygun teknik ve idari güvenlik 
-                  önlemlerini kullanıyoruz. Ödeme bilgileriniz SSL şifreleme teknolojisi ile korunmaktadır.
-                </p>
-              </section>
-
-              <section>
-                <h2 className="text-2xl font-bold text-slate-900 mb-4">5. Çerezler</h2>
-                <p className="text-slate-700 leading-relaxed">
-                  Web sitemiz, kullanıcı deneyimini iyileştirmek için çerezler kullanır. Çerezler, 
-                  tarayıcınız tarafından saklanan küçük metin dosyalarıdır. Tarayıcı ayarlarınızdan 
-                  çerezleri yönetebilir veya engelleyebilirsiniz.
-                </p>
-              </section>
-
-              <section>
-                <h2 className="text-2xl font-bold text-slate-900 mb-4">6. Üçüncü Taraflarla Paylaşım</h2>
-                <p className="text-slate-700 leading-relaxed">
-                  Kişisel verilerinizi, yasal zorunluluklar dışında üçüncü taraflarla paylaşmıyoruz. 
-                  Sipariş teslimatı için kargo şirketleri ve ödeme işlemleri için ödeme hizmet sağlayıcıları 
-                  ile gerekli minimum bilgiler paylaşılabilir.
-                </p>
-              </section>
-
-              <section>
-                <h2 className="text-2xl font-bold text-slate-900 mb-4">7. Haklarınız</h2>
-                <p className="text-slate-700 leading-relaxed mb-3">
-                  KVKK kapsamında aşağıdaki haklara sahipsiniz:
-                </p>
-                <ul className="list-disc list-inside space-y-2 text-slate-700 ml-4">
-                  <li>Kişisel verilerinizin işlenip işlenmediğini öğrenme</li>
-                  <li>İşlenmişse buna ilişkin bilgi talep etme</li>
-                  <li>Kişisel verilerinizin işlenme amacını öğrenme</li>
-                  <li>Yurt içinde veya yurt dışında aktarıldığı üçüncü kişileri bilme</li>
-                  <li>Kişisel verilerinizin düzeltilmesini isteme</li>
-                  <li>Kişisel verilerinizin silinmesini veya yok edilmesini isteme</li>
-                </ul>
-              </section>
-
-              <section>
-                <h2 className="text-2xl font-bold text-slate-900 mb-4">8. İletişim</h2>
-                <p className="text-slate-700 leading-relaxed">
-                  Gizlilik politikamız hakkında sorularınız varsa veya haklarınızı kullanmak isterseniz, 
-                  bizimle iletişime geçebilirsiniz:
-                </p>
-                <div className="mt-4 p-4 bg-purple-50 rounded-xl">
-                  <p className="text-slate-900 font-semibold">Polen Çiçek</p>
-                  <p className="text-slate-700">Hacı Mütahir mah, Dr. Rauf Denktaş Cd. No:5, 42320 Ereğli/Konya</p>
-                  <p className="text-slate-700">Telefon: 0545 672 63 17</p>
-                </div>
-              </section>
-
-              <section>
-                <h2 className="text-2xl font-bold text-slate-900 mb-4">9. Politika Güncellemeleri</h2>
-                <p className="text-slate-700 leading-relaxed">
-                  Bu gizlilik politikasını zaman zaman güncelleyebiliriz. Önemli değişiklikler olduğunda, 
-                  web sitemiz üzerinden veya e-posta yoluyla sizi bilgilendireceğiz. Güncel politikayı 
-                  düzenli olarak kontrol etmenizi öneririz.
-                </p>
-              </section>
-            </div>
-
-            <div className="mt-12 pt-8 border-t border-slate-200 text-center">
-              <a href="/contact" className="btn-primary px-8 py-4">
-                Bizimle İletişime Geçin
-              </a>
-            </div>
+    <main className="min-h-screen bg-white pt-24">
+      <div className="container mx-auto px-4 py-12 max-w-4xl">
+        {/* Breadcrumb */}
+        <div className="mb-8">
+          <div className="flex items-center gap-2 text-sm text-slate-600">
+            <Link href="/" className="hover:text-purple-600">Ana Sayfa</Link>
+            <span>/</span>
+            <span className="text-slate-900 font-semibold">Gizlilik Politikası</span>
           </div>
+        </div>
+
+        <h1 className="text-4xl font-bold text-slate-900 mb-8">
+          Gizlilik Politikası
+        </h1>
+
+        <div className="prose prose-lg max-w-none">
+          <section className="mb-8">
+            <h2 className="text-2xl font-bold text-slate-900 mb-4">1. Genel Bilgiler</h2>
+            <p className="text-slate-700 mb-4">
+              Polen Çiçek olarak, müşterilerimizin gizliliğine saygı duyuyor ve 
+              kişisel verilerini korumak için gerekli tüm önlemleri alıyoruz. 
+              Bu gizlilik politikası, web sitemizi ziyaret ettiğinizde veya 
+              hizmetlerimizi kullandığınızda kişisel verilerinizin nasıl toplandığını, 
+              kullanıldığını ve korunduğunu açıklamaktadır.
+            </p>
+          </section>
+
+          <section className="mb-8">
+            <h2 className="text-2xl font-bold text-slate-900 mb-4">2. Toplanan Bilgiler</h2>
+            <p className="text-slate-700 mb-4">
+              Web sitemizi kullanırken aşağıdaki bilgileri toplayabiliriz:
+            </p>
+            <ul className="list-disc pl-6 text-slate-700 space-y-2">
+              <li>Ad, soyad ve iletişim bilgileri (e-posta, telefon)</li>
+              <li>Teslimat adresi bilgileri</li>
+              <li>Sipariş geçmişi ve tercihleriniz</li>
+              <li>Ödeme bilgileri (güvenli ödeme sistemleri üzerinden)</li>
+              <li>Web sitesi kullanım bilgileri (çerezler aracılığıyla)</li>
+              <li>IP adresi ve tarayıcı bilgileri</li>
+            </ul>
+          </section>
+
+          <section className="mb-8">
+            <h2 className="text-2xl font-bold text-slate-900 mb-4">3. Bilgilerin Kullanımı</h2>
+            <p className="text-slate-700 mb-4">
+              Topladığımız bilgileri şu amaçlarla kullanırız:
+            </p>
+            <ul className="list-disc pl-6 text-slate-700 space-y-2">
+              <li>Siparişlerinizi işlemek ve teslimatınızı gerçekleştirmek</li>
+              <li>Müşteri hizmetleri desteği sağlamak</li>
+              <li>Size özel kampanya ve teklifler sunmak (onay vermeniz durumunda)</li>
+              <li>Web sitemizi geliştirmek ve kullanıcı deneyimini iyileştirmek</li>
+              <li>Yasal yükümlülüklerimizi yerine getirmek</li>
+              <li>Dolandırıcılığı önlemek ve güvenliği sağlamak</li>
+            </ul>
+          </section>
+
+          <section className="mb-8">
+            <h2 className="text-2xl font-bold text-slate-900 mb-4">4. Çerezler (Cookies)</h2>
+            <p className="text-slate-700 mb-4">
+              Web sitemiz, kullanıcı deneyimini geliştirmek amacıyla çerezler kullanmaktadır. 
+              Çerezler, cihazınıza kaydedilen küçük metin dosyalarıdır ve size daha iyi 
+              bir hizmet sunmamıza yardımcı olur.
+            </p>
+            <p className="text-slate-700 mb-4">
+              Tarayıcı ayarlarınızdan çerezleri reddedebilir veya silebilirsiniz. 
+              Ancak bu durumda web sitesinin bazı özelliklerini kullanamazsınız.
+            </p>
+          </section>
+
+          <section className="mb-8">
+            <h2 className="text-2xl font-bold text-slate-900 mb-4">5. Bilgi Güvenliği</h2>
+            <p className="text-slate-700 mb-4">
+              Kişisel verilerinizin güvenliğini sağlamak için endüstri standardı 
+              güvenlik önlemleri kullanıyoruz:
+            </p>
+            <ul className="list-disc pl-6 text-slate-700 space-y-2">
+              <li>SSL şifreleme ile güvenli veri iletimi</li>
+              <li>Güvenli sunucularda veri saklama</li>
+              <li>Sınırlı erişim kontrolleri</li>
+              <li>Düzenli güvenlik güncellemeleri</li>
+            </ul>
+          </section>
+
+          <section className="mb-8">
+            <h2 className="text-2xl font-bold text-slate-900 mb-4">6. Üçüncü Taraf Paylaşımı</h2>
+            <p className="text-slate-700 mb-4">
+              Kişisel bilgilerinizi, hizmet sağlayıcılarımız dışında üçüncü taraflarla 
+              paylaşmıyoruz. Bilgileriniz yalnızca şu durumlarda paylaşılabilir:
+            </p>
+            <ul className="list-disc pl-6 text-slate-700 space-y-2">
+              <li>Kargo firmaları (teslimat için)</li>
+              <li>Ödeme işlem sağlayıcıları (güvenli ödeme için)</li>
+              <li>Yasal merciler (yasal zorunluluk durumunda)</li>
+            </ul>
+          </section>
+
+          <section className="mb-8">
+            <h2 className="text-2xl font-bold text-slate-900 mb-4">7. Pazarlama İletişimi</h2>
+            <p className="text-slate-700 mb-4">
+              Size kampanya, yeni ürünler ve özel teklifler hakkında bilgilendirme 
+              e-postaları gönderebiliriz. Bu iletişimi almak istemiyorsanız, 
+              e-posta içindeki "abonelikten çık" linkini kullanabilir veya 
+              bizimle iletişime geçebilirsiniz.
+            </p>
+          </section>
+
+          <section className="mb-8">
+            <h2 className="text-2xl font-bold text-slate-900 mb-4">8. Haklarınız</h2>
+            <p className="text-slate-700 mb-4">
+              KVKK kapsamında aşağıdaki haklara sahipsiniz:
+            </p>
+            <ul className="list-disc pl-6 text-slate-700 space-y-2">
+              <li>Kişisel verilerinize erişim talep etme</li>
+              <li>Kişisel verilerinizin düzeltilmesini isteme</li>
+              <li>Kişisel verilerinizin silinmesini isteme</li>
+              <li>Veri işlemeye itiraz etme</li>
+              <li>Verilerinizin taşınabilirliğini talep etme</li>
+            </ul>
+          </section>
+
+          <section className="mb-8">
+            <h2 className="text-2xl font-bold text-slate-900 mb-4">9. Çocukların Gizliliği</h2>
+            <p className="text-slate-700 mb-4">
+              Web sitemiz 18 yaş altı kullanıcılara yönelik değildir. 
+              18 yaşından küçük kişilerin kişisel bilgilerini bilerek toplamıyoruz.
+            </p>
+          </section>
+
+          <section className="mb-8">
+            <h2 className="text-2xl font-bold text-slate-900 mb-4">10. Politika Değişiklikleri</h2>
+            <p className="text-slate-700 mb-4">
+              Bu gizlilik politikasını zaman zaman güncelleyebiliriz. 
+              Önemli değişiklikler olduğunda sizi bilgilendireceğiz.
+            </p>
+          </section>
+
+          <section className="mb-8">
+            <h2 className="text-2xl font-bold text-slate-900 mb-4">11. İletişim</h2>
+            <p className="text-slate-700 mb-4">
+              Gizlilik politikamızla ilgili sorularınız için bizimle iletişime geçebilirsiniz:
+            </p>
+            <div className="bg-purple-50 p-6 rounded-xl">
+              <p className="text-slate-700 mb-2">
+                <strong>E-posta:</strong> info@polencicek.com
+              </p>
+              <p className="text-slate-700 mb-2">
+                <strong>Telefon:</strong> +90 545 672 6317
+              </p>
+              <p className="text-slate-700">
+                <strong>Adres:</strong> Konya Ereğli, Türkiye
+              </p>
+            </div>
+          </section>
+
+          <section className="mb-8">
+            <p className="text-sm text-slate-600 italic">
+              Son güncelleme: {new Date().toLocaleDateString('tr-TR', { year: 'numeric', month: 'long', day: 'numeric' })}
+            </p>
+          </section>
         </div>
       </div>
     </main>
