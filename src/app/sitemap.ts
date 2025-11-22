@@ -1,68 +1,64 @@
-import { MetadataRoute } from 'next'
-import { serverSupabase } from '@/lib/supabase/server'
+import { MetadataRoute } from 'next';
+import { clientSupabase } from '@/lib/supabase/client';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = 'https://polencicek.com' // ⚠️ Domain'inizi yazın
-  const supabase = serverSupabase()
+  const baseUrl = 'https://polencicek.com';
+
+  // Ürünleri çek
+  const supabase = clientSupabase();
+  const { data: products } = await supabase
+    .from('products')
+    .select('slug, updated_at')
+    .eq('is_active', true);
+
+  // Kategorileri çek
+  const { data: categories } = await supabase
+    .from('categories')
+    .select('slug, created_at');
 
   // Statik sayfalar
-  const staticPages: MetadataRoute.Sitemap = [
+  const routes = [
     {
       url: baseUrl,
       lastModified: new Date(),
-      changeFrequency: 'daily',
+      changeFrequency: 'daily' as const,
       priority: 1,
     },
     {
       url: `${baseUrl}/products`,
       lastModified: new Date(),
-      changeFrequency: 'daily',
+      changeFrequency: 'daily' as const,
       priority: 0.9,
     },
     {
       url: `${baseUrl}/about`,
       lastModified: new Date(),
-      changeFrequency: 'monthly',
+      changeFrequency: 'monthly' as const,
       priority: 0.7,
     },
     {
       url: `${baseUrl}/contact`,
       lastModified: new Date(),
-      changeFrequency: 'monthly',
-      priority: 0.8,
+      changeFrequency: 'monthly' as const,
+      priority: 0.7,
     },
-    {
-      url: `${baseUrl}/faq`,
-      lastModified: new Date(),
-      changeFrequency: 'monthly',
-      priority: 0.6,
-    },
-  ]
+  ];
 
-  // Ürünler
-  const { data: products } = await supabase
-    .from('products')
-    .select('slug, created_at')
-    .eq('is_active', true)
-
-  const productPages: MetadataRoute.Sitemap = (products || []).map((product) => ({
+  // Ürün sayfaları
+  const productRoutes = products?.map((product) => ({
     url: `${baseUrl}/products/${product.slug}`,
-    lastModified: new Date(product.created_at),
-    changeFrequency: 'weekly',
+    lastModified: new Date(product.updated_at || new Date()),
+    changeFrequency: 'weekly' as const,
     priority: 0.8,
-  }))
+  })) || [];
 
-  // Kategoriler
-  const { data: categories } = await supabase
-    .from('categories')
-    .select('slug')
+  // Kategori sayfaları
+  const categoryRoutes = categories?.map((category) => ({
+    url: `${baseUrl}/categories/${category.slug}`,
+    lastModified: new Date(category.created_at || new Date()),
+    changeFrequency: 'weekly' as const,
+    priority: 0.8,
+  })) || [];
 
-  const categoryPages: MetadataRoute.Sitemap = (categories || []).map((category) => ({
-    url: `${baseUrl}/category/${category.slug}`,
-    lastModified: new Date(),
-    changeFrequency: 'weekly',
-    priority: 0.7,
-  }))
-
-  return [...staticPages, ...productPages, ...categoryPages]
+  return [...routes, ...productRoutes, ...categoryRoutes];
 }
