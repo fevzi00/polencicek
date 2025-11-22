@@ -1,214 +1,358 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { clientSupabase } from "@/lib/supabase/client";
 
-export default function AdminDashboard() {
-  const router = useRouter();
-  const [user, setUser] = useState<any>(null);
+interface Product {
+  id: string;
+  title: string;
+  price: number;
+  stock: number;
+  is_active: boolean;
+  images: string[];
+  slug: string;
+}
+
+export default function AdminProductsPage() {
+  const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
-  const [isAdmin, setIsAdmin] = useState(false);
-  const [stats, setStats] = useState({
-    products: 0,
-    categories: 0,
-    orders: 0
-  });
-  const [lowStockProducts, setLowStockProducts] = useState<any[]>([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filterStatus, setFilterStatus] = useState<"all" | "active" | "inactive">("all");
 
   useEffect(() => {
-    checkUser();
+    loadProducts();
   }, []);
 
-  const checkUser = async () => {
+  const loadProducts = async () => {
     const supabase = clientSupabase();
-    const { data: { user } } = await supabase.auth.getUser();
-    
-    if (!user) {
-      router.push("/auth/login");
-      return;
-    }
-
-    const adminEmails = ["fevziucak4242@gmail.com"];
-    const userIsAdmin = adminEmails.includes(user.email || "");
-
-    if (!userIsAdmin) {
-      router.push("/account");
-      return;
-    }
-
-    setUser(user);
-    setIsAdmin(true);
-    setLoading(false);
-    loadStats();
-  };
-
-  const loadStats = async () => {
-    const supabase = clientSupabase();
-    
-    const { count: productsCount } = await supabase
-      .from("products")
-      .select("*", { count: "exact", head: true });
-
-    const { count: categoriesCount } = await supabase
-      .from("categories")
-      .select("*", { count: "exact", head: true });
-
-    const { count: ordersCount } = await supabase
-      .from("orders")
-      .select("*", { count: "exact", head: true });
-
-    // Düşük stoklu ürünler (5'ten az)
-    const { data: lowStock } = await supabase
+    const { data } = await supabase
       .from("products")
       .select("*")
-      .lte("stock", 5)
-      .gt("stock", 0)
-      .eq("is_active", true);
+      .order("created_at", { ascending: false });
 
-    setStats({
-      products: productsCount || 0,
-      categories: categoriesCount || 0,
-      orders: ordersCount || 0,
-    });
-
-    setLowStockProducts(lowStock || []);
+    setProducts(data || []);
+    setLoading(false);
   };
 
-  const handleLogout = async () => {
+  const toggleActive = async (productId: string, currentStatus: boolean) => {
     const supabase = clientSupabase();
-    await supabase.auth.signOut();
-    router.push("/");
+    await supabase
+      .from("products")
+      .update({ is_active: !currentStatus })
+      .eq("id", productId);
+
+    loadProducts();
+  };
+
+  const deleteProduct = async (productId: string) => {
+    if (!confirm("Bu ürünü silmek istediğinize emin misiniz?")) return;
+
+    const supabase = clientSupabase();
+    await supabase
+      .from("products")
+      .delete()
+      .eq("id", productId);
+
+    loadProducts();
+  };
+
+  // Filtreleme
+  const filteredProducts = products.filter((product) => {
+    const matchesSearch = product.title.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesStatus =
+      filterStatus === "all" ||
+      (filterStatus === "active" && product.is_active) ||
+      (filterStatus === "inactive" && !product.is_active);
+    return matchesSearch && matchesStatus;
+  });
+
+  const stats = {
+    total: products.length,
+    active: products.filter((p) => p.is_active).length,
+    inactive: products.filter((p) => !p.is_active).length,
+    lowStock: products.filter((p) => p.stock <= 5).length,
   };
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-gradient-to-b from-white to-purple-50/30 pt-24 flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-16 h-16 border-4 border-purple-200 border-t-purple-600 rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-slate-600">Yükleniyor...</p>
-        </div>
-      </main>
+      <div className="flex items-center justify-center py-20">
+        <div className="w-16 h-16 border-4 border-purple-200 border-t-purple-600 rounded-full animate-spin"></div>
+      </div>
     );
   }
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-white to-purple-50/30 pt-24">
-      <div className="container mx-auto px-4 py-12">
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold text-slate-900 mb-2">Admin Paneli</h1>
-          <p className="text-slate-600">Hoş geldiniz, {user?.email}</p>
+    <div className="space-y-6">
+      {/* İstatistikler */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="bg-white rounded-xl p-4 border border-slate-200">
+          <div className="text-sm text-slate-600 mb-1">Toplam Ürün</div>
+          <div className="text-2xl font-bold text-slate-900">{stats.total}</div>
         </div>
-
-        <div className="grid md:grid-cols-3 gap-6 mb-12">
-          <div className="bg-white rounded-3xl p-8 shadow-lg border border-slate-100">
-            <div className="w-12 h-12 rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center mb-4">
-              <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-              </svg>
-            </div>
-            <div className="text-3xl font-bold text-slate-900 mb-1">{stats.products}</div>
-            <div className="text-sm text-slate-600">Toplam Ürün</div>
-          </div>
-
-          <div className="bg-white rounded-3xl p-8 shadow-lg border border-slate-100">
-            <div className="w-12 h-12 rounded-xl bg-gradient-to-r from-blue-500 to-cyan-500 flex items-center justify-center mb-4">
-              <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
-              </svg>
-            </div>
-            <div className="text-3xl font-bold text-slate-900 mb-1">{stats.categories}</div>
-            <div className="text-sm text-slate-600">Toplam Kategori</div>
-          </div>
-
-          <div className="bg-white rounded-3xl p-8 shadow-lg border border-slate-100">
-            <div className="w-12 h-12 rounded-xl bg-gradient-to-r from-green-500 to-emerald-500 flex items-center justify-center mb-4">
-              <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-              </svg>
-            </div>
-            <div className="text-3xl font-bold text-slate-900 mb-1">{stats.orders}</div>
-            <div className="text-sm text-slate-600">Toplam Sipariş</div>
-          </div>
+        <div className="bg-white rounded-xl p-4 border border-slate-200">
+          <div className="text-sm text-slate-600 mb-1">Aktif</div>
+          <div className="text-2xl font-bold text-green-600">{stats.active}</div>
         </div>
-
-        {/* Düşük Stok Uyarısı */}
-        {lowStockProducts.length > 0 && (
-          <div className="mb-12 bg-yellow-50 border-2 border-yellow-200 rounded-3xl p-6">
-            <h2 className="text-xl font-bold text-yellow-800 mb-4 flex items-center gap-2">
-              ⚠️ Düşük Stok Uyarısı
-            </h2>
-            <p className="text-yellow-700 mb-4">
-              {lowStockProducts.length} ürünün stoğu azalıyor!
-            </p>
-            <div className="space-y-2">
-              {lowStockProducts.map((product) => (
-                <div key={product.id} className="flex items-center justify-between bg-white p-3 rounded-xl">
-                  <span className="font-semibold text-slate-900">{product.title}</span>
-                  <span className="text-yellow-700 font-bold">
-                    {product.stock} adet kaldı
-                  </span>
-                </div>
-              ))}
-            </div>
-            <div className="mt-4">
-              <Link href="/admin/products">
-                <button className="btn-primary px-6 py-2 text-sm">
-                  Stokları Güncelle
-                </button>
-              </Link>
-            </div>
-          </div>
-        )}
-
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <Link href="/admin/products">
-            <div className="bg-white rounded-3xl p-8 shadow-lg border border-slate-100 hover:border-purple-300 transition-all cursor-pointer">
-              <div className="w-16 h-16 rounded-2xl bg-purple-100 flex items-center justify-center mb-4">
-                <svg className="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-                </svg>
-              </div>
-              <h3 className="text-xl font-bold text-slate-900 mb-2">Ürün Yönetimi</h3>
-              <p className="text-slate-600 text-sm">Ürün ekle, düzenle, sil</p>
-            </div>
-          </Link>
-
-          <Link href="/admin/categories">
-            <div className="bg-white rounded-3xl p-8 shadow-lg border border-slate-100 hover:border-blue-300 transition-all cursor-pointer">
-              <div className="w-16 h-16 rounded-2xl bg-blue-100 flex items-center justify-center mb-4">
-                <svg className="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
-                </svg>
-              </div>
-              <h3 className="text-xl font-bold text-slate-900 mb-2">Kategori Yönetimi</h3>
-              <p className="text-slate-600 text-sm">Kategori ekle, düzenle, sil</p>
-            </div>
-          </Link>
-
-          <Link href="/admin/orders">
-            <div className="bg-white rounded-3xl p-8 shadow-lg border border-slate-100 hover:border-green-300 transition-all cursor-pointer">
-              <div className="w-16 h-16 rounded-2xl bg-green-100 flex items-center justify-center mb-4">
-                <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                </svg>
-              </div>
-              <h3 className="text-xl font-bold text-slate-900 mb-2">Sipariş Yönetimi</h3>
-              <p className="text-slate-600 text-sm">Siparişleri görüntüle</p>
-            </div>
-          </Link>
+        <div className="bg-white rounded-xl p-4 border border-slate-200">
+          <div className="text-sm text-slate-600 mb-1">Pasif</div>
+          <div className="text-2xl font-bold text-red-600">{stats.inactive}</div>
         </div>
-
-        <div className="mt-12 text-center">
-          <button
-            onClick={handleLogout}
-            className="text-red-600 hover:text-red-700 font-semibold"
-          >
-            Çıkış Yap
-          </button>
+        <div className="bg-white rounded-xl p-4 border border-slate-200">
+          <div className="text-sm text-slate-600 mb-1">Düşük Stok</div>
+          <div className="text-2xl font-bold text-orange-600">{stats.lowStock}</div>
         </div>
       </div>
-    </main>
+
+      {/* Arama & Filtreler */}
+      <div className="bg-white rounded-xl p-6 border border-slate-200">
+        <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
+          <div className="flex-1 w-full md:max-w-md">
+            <div className="relative">
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Ürün ara..."
+                className="w-full pl-10 pr-4 py-2 border-2 border-slate-200 rounded-lg focus:border-purple-400 focus:outline-none"
+              />
+              <svg
+                className="w-5 h-5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                />
+              </svg>
+            </div>
+          </div>
+
+          <div className="flex gap-2">
+            <button
+              onClick={() => setFilterStatus("all")}
+              className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                filterStatus === "all"
+                  ? "bg-purple-600 text-white"
+                  : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+              }`}
+            >
+              Tümü
+            </button>
+            <button
+              onClick={() => setFilterStatus("active")}
+              className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                filterStatus === "active"
+                  ? "bg-green-600 text-white"
+                  : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+              }`}
+            >
+              Aktif
+            </button>
+            <button
+              onClick={() => setFilterStatus("inactive")}
+              className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                filterStatus === "inactive"
+                  ? "bg-red-600 text-white"
+                  : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+              }`}
+            >
+              Pasif
+            </button>
+          </div>
+
+          <Link href="/admin/products/new">
+       <Link href="/admin/products/new">
+  <button className="px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl hover:shadow-xl hover:scale-105 transition-all font-semibold flex items-center gap-2 whitespace-nowrap">
+    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+    </svg>
+    Yeni Ürün
+  </button>
+</Link>
+          </Link>
+        </div>
+      </div>
+
+      {/* Ürünler Tablosu */}
+      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+        {filteredProducts.length === 0 ? (
+          <div className="text-center py-12">
+            <div className="text-6xl mb-4">📦</div>
+            <p className="text-slate-600 mb-6">
+              {searchQuery ? "Ürün bulunamadı" : "Henüz ürün yok"}
+            </p>
+            {!searchQuery && (
+              <Link href="/admin/products/new">
+                <button className="btn-primary px-8 py-3">İlk Ürünü Ekle</button>
+              </Link>
+            )}
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead className="bg-slate-50 border-b border-slate-200">
+                <tr>
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-slate-700">
+                    Ürün
+                  </th>
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-slate-700">
+                    Fiyat
+                  </th>
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-slate-700">
+                    Stok
+                  </th>
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-slate-700">
+                    Durum
+                  </th>
+                  <th className="px-6 py-4 text-right text-sm font-semibold text-slate-700">
+                    İşlemler
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {filteredProducts.map((product) => (
+                  <tr key={product.id} className="hover:bg-slate-50 transition-colors">
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-4">
+                        <div className="w-16 h-16 rounded-lg overflow-hidden bg-slate-100 flex-shrink-0">
+                          {product.images?.[0] ? (
+                            <img
+                              src={product.images[0]}
+                              alt={product.title}
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center text-2xl">
+                              🌸
+                            </div>
+                          )}
+                        </div>
+                        <div className="min-w-0">
+                          <div className="font-semibold text-slate-900 truncate">
+                            {product.title}
+                          </div>
+                          <div className="text-sm text-slate-500 truncate">
+                            /{product.slug}
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="font-semibold text-purple-600">
+                        ₺{product.price?.toFixed(2)}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div
+                        className={`inline-flex items-center gap-1 ${
+                          product.stock <= 5 ? "text-orange-600 font-semibold" : "text-slate-900"
+                        }`}
+                      >
+                        {product.stock <= 5 && <span>⚠️</span>}
+                        {product.stock || 0} adet
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <button
+                        onClick={() => toggleActive(product.id, product.is_active)}
+                        className={`px-3 py-1 rounded-full text-xs font-semibold transition-colors ${
+                          product.is_active
+                            ? "bg-green-100 text-green-700 hover:bg-green-200"
+                            : "bg-red-100 text-red-700 hover:bg-red-200"
+                        }`}
+                      >
+                        {product.is_active ? "● Aktif" : "○ Pasif"}
+                      </button>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="flex items-center justify-end gap-2">
+                        <Link href={`/products/${product.slug}`} target="_blank">
+                          <button
+                            className="p-2 text-slate-600 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-colors"
+                            title="Görüntüle"
+                          >
+                            <svg
+                              className="w-5 h-5"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                              />
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                              />
+                            </svg>
+                          </button>
+                        </Link>
+                        <Link href={`/admin/products/${product.id}`}>
+                          <button
+                            className="p-2 text-slate-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                            title="Düzenle"
+                          >
+                            <svg
+                              className="w-5 h-5"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                              />
+                            </svg>
+                          </button>
+                        </Link>
+                        <button
+                          onClick={() => deleteProduct(product.id)}
+                          className="p-2 text-slate-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                          title="Sil"
+                        >
+                          <svg
+                            className="w-5 h-5"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                            />
+                          </svg>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+
+      {/* Sonuç Sayısı */}
+      {filteredProducts.length > 0 && (
+        <div className="text-sm text-slate-600 text-center">
+          {filteredProducts.length} ürün gösteriliyor
+          {searchQuery && ` (toplam ${products.length} ürün içinden)`}
+        </div>
+      )}
+    </div>
   );
 }

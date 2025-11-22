@@ -25,7 +25,7 @@ export const metadata: Metadata = {
     description: "2011'den beri Konya Ereğli'de taze ve kaliteli çiçek teslimatı. Hızlı teslimat, uygun fiyat.",
     images: [
       {
-        url: "/android-chrome-512x512.png", // Favicon'un büyük halini OG image olarak kullanıyoruz
+        url: "/android-chrome-512x512.png",
         width: 512,
         height: 512,
         alt: "Polen Çiçek - Konya Ereğli Çiçekçi",
@@ -83,7 +83,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        {/* Dancing Script - Mevcut */}
         <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap" rel="stylesheet" />
+        {/* Great Vibes - İmza için ince el yazısı */}
+        <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet" />
       </head>
       <body className="bg-white">
         <GoogleAnalytics />

@@ -164,6 +164,8 @@ export default function RegisterPage() {
               >
                 {loading ? "Kayıt yapılıyor..." : "Kayıt Ol"}
               </button>
+
+                
             </form>
 
             <div className="mt-6 text-center">

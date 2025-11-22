@@ -65,7 +65,7 @@ export function Footer() {
             </ul>
           </div>
 
-          {/* Yasal - YENİ BÖLÜM */}
+          {/* Yasal */}
           <div>
             <h4 className="text-lg font-semibold mb-6">Yasal</h4>
             <ul className="space-y-3">
@@ -102,29 +102,70 @@ export function Footer() {
             </ul>
           </div>
 
-          {/* Contact */}
-          <div>
+          {/* Contact + Signature */}
+          <div className="relative">
             <h4 className="text-lg font-semibold mb-6">İletişim</h4>
-            <ul className="space-y-4 text-gray-400 text-sm">
-              <li>
-                <div className="font-medium text-white mb-1">Telefon</div>
-                <a href="tel:05456726317" className="hover:text-purple-400 transition-colors">
-                  0545 672 63 17
-                </a>
-              </li>
-              <li>
-                <div className="font-medium text-white mb-1">Adres</div>
-                <p className="leading-relaxed">
-                  Hacı Mütahir mah<br />
-                  Dr. Rauf Denktaş Cd. No:5<br />
-                  42320 Ereğli/Konya
-                </p>
-              </li>
-              <li>
-                <div className="font-medium text-white mb-1">Çalışma Saatleri</div>
-                <p>Haftanın Her Günü: 09:00 - 19:00</p>
-              </li>
-            </ul>
+            
+            <div className="flex items-start gap-6">
+              {/* İletişim Bilgileri - Kompakt */}
+              <div className="flex-1 space-y-3 text-sm">
+                <div>
+                  <div className="font-semibold text-white mb-1">Telefon</div>
+                  <a href="tel:05456726317" className="text-gray-400 hover:text-purple-400 transition-colors">
+                    0545 672 63 17
+                  </a>
+                </div>
+                <div>
+                  <div className="font-semibold text-white mb-1">Adres</div>
+                  <p className="text-gray-400 leading-relaxed">
+                    Hacı Mütahir mah<br />
+                    Dr. Rauf Denktaş Cd. No:5<br />
+                    42320 Ereğli/Konya
+                  </p>
+                </div>
+                <div>
+                  <div className="font-semibold text-white mb-1">Çalışma Saatleri</div>
+                  <p className="text-gray-400">Her Gün 09:00 - 19:00</p>
+                </div>
+              </div>
+
+              {/* İmza - Yan Tarafta */}
+              <div className="hidden lg:flex items-center justify-center flex-shrink-0" style={{ width: "180px" }}>
+                <div 
+                  className="text-white leading-tight text-center"
+                  style={{ 
+                    fontFamily: "'Great Vibes', cursive",
+                    fontSize: "52px",
+                    transform: "rotate(-5deg)",
+                    textShadow: "2px 2px 6px rgba(0,0,0,0.4)",
+                    whiteSpace: "nowrap"
+                  }}
+                >
+                  <div>İsmail Uçak</div>
+                  <div style={{ fontSize: "22px", marginTop: "4px", color: "rgba(255,255,255,0.9)" }}>
+                    "Şehrin Çiçekçisi"
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* İmza - Mobilde Altta */}
+            <div className="lg:hidden mt-8 pt-6 border-t border-white/10">
+              <div 
+                className="text-white leading-tight text-center"
+                style={{ 
+                  fontFamily: "'Great Vibes', cursive",
+                  fontSize: "44px",
+                  transform: "rotate(-3deg)",
+                  textShadow: "2px 2px 6px rgba(0,0,0,0.4)"
+                }}
+              >
+                <div>İsmail Uçak</div>
+                <div style={{ fontSize: "20px", marginTop: "4px", color: "rgba(255,255,255,0.9)" }}>
+                  "Şehrin Çiçekçisi"
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>

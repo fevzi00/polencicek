@@ -86,7 +86,16 @@ export default function LoginPage() {
                   placeholder="••••••••"
                 />
               </div>
-
+{/* Şifre alanından sonra */}
+<div className="flex items-center justify-between">
+  <label className="flex items-center gap-2">
+    <input type="checkbox" className="rounded text-purple-600" />
+    <span className="text-sm text-slate-600">Beni Hatırla</span>
+  </label>
+  <Link href="/auth/forgot-password" className="text-sm text-purple-600 hover:text-purple-700 font-semibold">
+    Şifremi Unuttum
+  </Link>
+</div>
               <button
                 type="submit"
                 disabled={loading}
