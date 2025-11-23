@@ -15,10 +15,9 @@ export default function ForgotPasswordPage() {
     setMessage(null);
 
     const supabase = clientSupabase();
-    const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/auth/reset-password`,
-    });
-
+   const { error } = await supabase.auth.resetPasswordForEmail(email, {
+  redirectTo: 'https://polencicek.com/auth/reset-password',
+});
     if (error) {
       setMessage({ type: "error", text: error.message });
     } else {
