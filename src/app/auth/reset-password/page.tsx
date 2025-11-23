@@ -1,56 +1,35 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useState } from "react";
+import Link from "next/link";
 import { clientSupabase } from "@/lib/supabase/client";
 
-export default function ResetPasswordPage() {
-  const router = useRouter();
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+export default function ForgotPasswordPage() {
+  const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
-  useEffect(() => {
-    // URL'den hash kontrol et
-    const hashParams = new URLSearchParams(window.location.hash.substring(1));
-    const type = hashParams.get("type");
-    
-    if (type !== "recovery") {
-      router.push("/auth/login");
-    }
-  }, [router]);
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
     setMessage(null);
 
-    if (password !== confirmPassword) {
-      setMessage({ type: "error", text: "Şifreler eşleşmiyor!" });
-      return;
-    }
-
-    if (password.length < 6) {
-      setMessage({ type: "error", text: "Şifre en az 6 karakter olmalıdır!" });
-      return;
-    }
-
-    setLoading(true);
-
     const supabase = clientSupabase();
-    const { error } = await supabase.auth.updateUser({
-      password: password,
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/auth/reset-password`,
     });
 
     if (error) {
       setMessage({ type: "error", text: error.message });
-      setLoading(false);
     } else {
-      setMessage({ type: "success", text: "Şifreniz başarıyla değiştirildi!" });
-      setTimeout(() => {
-        router.push("/auth/login");
-      }, 2000);
+      setMessage({
+        type: "success",
+        text: "Şifre sıfırlama bağlantısı e-posta adresinize gönderildi. Lütfen gelen kutunuzu kontrol edin.",
+      });
+      setEmail("");
     }
+
+    setLoading(false);
   };
 
   return (
@@ -61,11 +40,13 @@ export default function ResetPasswordPage() {
             <div className="text-center mb-8">
               <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <svg className="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
                 </svg>
               </div>
-              <h1 className="text-3xl font-bold text-slate-900 mb-2">Yeni Şifre Belirle</h1>
-              <p className="text-slate-600">Lütfen yeni şifrenizi girin.</p>
+              <h1 className="text-3xl font-bold text-slate-900 mb-2">Şifremi Unuttum</h1>
+              <p className="text-slate-600">
+                E-posta adresinizi girin, size şifre sıfırlama bağlantısı gönderelim.
+              </p>
             </div>
 
             {message && (
@@ -80,7 +61,7 @@ export default function ResetPasswordPage() {
                   <svg 
                     className={`w-5 h-5 flex-shrink-0 mt-0.5 ${
                       message.type === "success" ? "text-green-600" : "text-red-600"
-                    }`} 
+                    }`}
                     fill="none" 
                     stroke="currentColor" 
                     viewBox="0 0 24 24"
@@ -99,33 +80,17 @@ export default function ResetPasswordPage() {
             <form onSubmit={handleSubmit} className="space-y-6">
               <div>
                 <label className="block text-sm font-semibold text-slate-900 mb-2">
-                  Yeni Şifre *
+                  E-posta Adresi *
                 </label>
                 <input
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   required
-                  autoComplete="new-password"
+                  autoComplete="email"
                   style={{ color: '#000000' }}
-                  className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:border-purple-400 focus:outline-none transition-colors"
-                  placeholder="En az 6 karakter"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-semibold text-slate-900 mb-2">
-                  Yeni Şifre (Tekrar) *
-                </label>
-                <input
-                  type="password"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  required
-                  autoComplete="new-password"
-                  style={{ color: '#000000' }}
-                  className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:border-purple-400 focus:outline-none transition-colors"
-                  placeholder="Şifrenizi tekrar girin"
+                  className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:border-purple-400 focus:outline-none"
+                  placeholder="fevziucak4242@gmail.com"
                 />
               </div>
 
@@ -140,13 +105,19 @@ export default function ResetPasswordPage() {
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"/>
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/>
                     </svg>
-                    Şifre Güncelleniyor...
+                    Gönderiliyor...
                   </>
                 ) : (
-                  "Şifreyi Güncelle"
+                  "Sıfırlama Bağlantısı Gönder"
                 )}
               </button>
             </form>
+
+            <div className="mt-6 text-center">
+              <Link href="/auth/login" className="text-purple-600 hover:text-purple-700 font-semibold">
+                ← Giriş Sayfasına Dön
+              </Link>
+            </div>
           </div>
         </div>
       </div>
