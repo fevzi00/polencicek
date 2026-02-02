@@ -72,55 +72,75 @@ export default function NewProductPage() {
 
     setLoading(true);
 
-    const supabase = clientSupabase();
-    
-    const slug = formData.title
-      .toLowerCase()
-      .replace(/ğ/g, 'g')
-      .replace(/ü/g, 'u')
-      .replace(/ş/g, 's')
-      .replace(/ı/g, 'i')
-      .replace(/ö/g, 'o')
-      .replace(/ç/g, 'c')
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/^-+|-+$/g, '');
+    try {
+      const supabase = clientSupabase();
+      
+      const slug = formData.title
+        .toLowerCase()
+        .replace(/ğ/g, 'g')
+        .replace(/ü/g, 'u')
+        .replace(/ş/g, 's')
+        .replace(/ı/g, 'i')
+        .replace(/ö/g, 'o')
+        .replace(/ç/g, 'c')
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '');
 
-    // Önce ürünü ekle
-    const { data: product, error: productError } = await supabase
-      .from("products")
-      .insert({
-        title: formData.title,
-        slug: slug,
-        description: formData.description || null,
-        price: parseFloat(formData.price),
-        stock: parseInt(formData.stock) || 0,
-        images: uploadedImages,
-        is_active: true,
-        is_featured: formData.isFeatured,
-      })
-      .select()
-      .single();
+      // Önce ürünü ekle
+      const { data: product, error: productError } = await supabase
+        .from("products")
+        .insert({
+          title: formData.title,
+          slug: slug,
+          description: formData.description || null,
+          price: parseFloat(formData.price),
+          stock: parseInt(formData.stock) || 0,
+          images: uploadedImages,
+          is_active: true,
+          is_featured: formData.isFeatured,
+        })
+        .select()
+        .single();
 
-    if (productError) {
-      alert("❌ Hata: " + productError.message);
+      if (productError) {
+        console.error("❌ Ürün ekleme hatası:", productError);
+        alert("❌ Ürün eklenemedi: " + productError.message);
+        setLoading(false);
+        return;
+      }
+
+      console.log("✅ Ürün eklendi:", product);
+
+      // Kategorileri bağla
+      if (selectedCategories.length > 0 && product) {
+        const categoryLinks = selectedCategories.map(catId => ({
+          product_id: product.id,
+          category_id: catId,
+        }));
+
+        console.log("📌 Kategori bağlantıları ekleniyor:", categoryLinks);
+
+        const { data: categoryData, error: categoryError } = await supabase
+          .from("product_categories")
+          .insert(categoryLinks)
+          .select();
+
+        if (categoryError) {
+          console.error("❌ Kategori bağlama hatası:", categoryError);
+          alert("⚠️ Ürün eklendi ama kategoriler bağlanamadı!\n\nHata: " + categoryError.message + "\n\nLütfen product_categories tablosunun var olduğundan emin olun.");
+        } else {
+          console.log("✅ Kategoriler bağlandı:", categoryData);
+        }
+      }
+
+      alert("✅ Ürün başarıyla eklendi!");
+      router.push("/admin/products");
+      
+    } catch (error: any) {
+      console.error("❌ Beklenmeyen hata:", error);
+      alert("❌ Beklenmeyen bir hata oluştu: " + error.message);
       setLoading(false);
-      return;
     }
-
-    // Kategorileri bağla
-    if (selectedCategories.length > 0 && product) {
-      const categoryLinks = selectedCategories.map(catId => ({
-        product_id: product.id,
-        category_id: catId,
-      }));
-
-      await supabase
-        .from("product_categories")
-        .insert(categoryLinks);
-    }
-
-    alert("✅ Ürün başarıyla eklendi!");
-    router.push("/admin/products");
   };
 
   return (

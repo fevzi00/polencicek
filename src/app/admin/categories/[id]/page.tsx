@@ -5,6 +5,14 @@ import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
 import { clientSupabase } from "@/lib/supabase/client";
 
+interface Product {
+  id: string;
+  title: string;
+  price: number;
+  images: string[];
+  is_active: boolean;
+}
+
 export default function EditCategoryPage() {
   const router = useRouter();
   const params = useParams();
@@ -18,10 +26,17 @@ export default function EditCategoryPage() {
     display_order: 1,
   });
 
+  // Ürün yönetimi için state'ler
+  const [allProducts, setAllProducts] = useState<Product[]>([]);
+  const [selectedProductIds, setSelectedProductIds] = useState<string[]>([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [loadingProducts, setLoadingProducts] = useState(true);
+
   const emojiOptions = ["🌸", "💐", "🌹", "🌺", "🌻", "🌷", "🪴", "🌿", "🍀", "🌾"];
 
   useEffect(() => {
     loadCategory();
+    loadProducts();
   }, []);
 
   const loadCategory = async () => {
@@ -43,40 +58,109 @@ export default function EditCategoryPage() {
     setLoading(false);
   };
 
+  const loadProducts = async () => {
+    const supabase = clientSupabase();
+    
+    // Tüm ürünleri çek
+    const { data: products } = await supabase
+      .from("products")
+      .select("id, title, price, images, is_active")
+      .eq("is_active", true)
+      .order("title");
+
+    setAllProducts(products || []);
+
+    // Bu kategorideki ürünleri çek
+    const { data: categoryProducts } = await supabase
+      .from("product_categories")
+      .select("product_id")
+      .eq("category_id", categoryId);
+
+    const productIds = categoryProducts?.map(pc => pc.product_id) || [];
+    setSelectedProductIds(productIds);
+
+    setLoadingProducts(false);
+  };
+
+  const toggleProduct = (productId: string) => {
+    setSelectedProductIds(prev => 
+      prev.includes(productId)
+        ? prev.filter(id => id !== productId)
+        : [...prev, productId]
+    );
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaving(true);
 
-    const slug = formData.name
-      .toLowerCase()
-      .replace(/ğ/g, 'g')
-      .replace(/ü/g, 'u')
-      .replace(/ş/g, 's')
-      .replace(/ı/g, 'i')
-      .replace(/ö/g, 'o')
-      .replace(/ç/g, 'c')
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/^-+|-+$/g, '');
+    try {
+      const slug = formData.name
+        .toLowerCase()
+        .replace(/ğ/g, 'g')
+        .replace(/ü/g, 'u')
+        .replace(/ş/g, 's')
+        .replace(/ı/g, 'i')
+        .replace(/ö/g, 'o')
+        .replace(/ç/g, 'c')
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '');
 
-    const supabase = clientSupabase();
-    const { error } = await supabase
-      .from("categories")
-      .update({
-        name: formData.name,
-        slug: slug,
-        icon: formData.icon,
-        display_order: formData.display_order,
-      })
-      .eq("id", categoryId);
+      const supabase = clientSupabase();
+      
+      // 1. Kategori bilgilerini güncelle
+      const { error: categoryError } = await supabase
+        .from("categories")
+        .update({
+          name: formData.name,
+          slug: slug,
+          icon: formData.icon,
+          display_order: formData.display_order,
+        })
+        .eq("id", categoryId);
 
-    if (error) {
+      if (categoryError) {
+        throw categoryError;
+      }
+
+      // 2. Ürün-kategori ilişkilerini güncelle
+      // Önce mevcut ilişkileri sil
+      await supabase
+        .from("product_categories")
+        .delete()
+        .eq("category_id", categoryId);
+
+      // Sonra yeni seçilenleri ekle
+      if (selectedProductIds.length > 0) {
+        const categoryLinks = selectedProductIds.map(productId => ({
+          product_id: productId,
+          category_id: categoryId,
+        }));
+
+        const { error: linkError } = await supabase
+          .from("product_categories")
+          .insert(categoryLinks);
+
+        if (linkError) {
+          console.error("❌ Ürün bağlama hatası:", linkError);
+          throw linkError;
+        }
+      }
+
+      alert("✅ Kategori ve ürünler başarıyla güncellendi!");
+      router.push("/admin/categories");
+      
+    } catch (error: any) {
+      console.error("❌ Güncelleme hatası:", error);
       alert("❌ Hata: " + error.message);
       setSaving(false);
-    } else {
-      alert("✅ Kategori başarıyla güncellendi!");
-      router.push("/admin/categories");
     }
   };
+
+  // Arama filtresi
+  const filteredProducts = allProducts.filter(product =>
+    product.title.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   if (loading) {
     return (
@@ -87,7 +171,7 @@ export default function EditCategoryPage() {
   }
 
   return (
-    <div className="max-w-3xl">
+    <div className="max-w-4xl">
       {/* Breadcrumb */}
       <div className="mb-6 flex items-center gap-2 text-sm text-slate-600">
         <Link href="/admin/categories" className="hover:text-purple-600">
@@ -180,27 +264,117 @@ export default function EditCategoryPage() {
           </div>
         </div>
 
-        {/* Önizleme */}
+        {/* Ürün Seçimi - YENİ! */}
         <div className="bg-white rounded-xl p-6 border border-slate-200">
-          <h3 className="text-lg font-semibold text-slate-900 mb-4 flex items-center gap-2">
-            <svg className="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-            </svg>
-            Önizleme
-          </h3>
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold text-slate-900 flex items-center gap-2">
+              <svg className="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+              </svg>
+              Kategorideki Ürünler
+              {selectedProductIds.length > 0 && (
+                <span className="ml-2 px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-xs font-bold">
+                  {selectedProductIds.length} ürün seçili
+                </span>
+              )}
+            </h3>
+            
+            {selectedProductIds.length > 0 && (
+              <button
+                type="button"
+                onClick={() => setSelectedProductIds([])}
+                className="text-sm text-red-600 hover:text-red-700 font-semibold"
+              >
+                Tümünü Kaldır
+              </button>
+            )}
+          </div>
 
-          <div className="p-4 bg-slate-50 rounded-xl">
-            <div className="inline-flex items-center gap-3 px-4 py-3 bg-white rounded-lg border-2 border-slate-200">
-              <span className="text-2xl">{formData.icon}</span>
-              <div>
-                <div className="font-semibold text-slate-900">{formData.name || "Kategori Adı"}</div>
-                <div className="text-xs text-slate-500">
-                  Sıra: {formData.display_order}
+          {loadingProducts ? (
+            <div className="flex items-center justify-center py-8">
+              <div className="w-8 h-8 border-4 border-purple-200 border-t-purple-600 rounded-full animate-spin"></div>
+            </div>
+          ) : (
+            <>
+              {/* Arama */}
+              <div className="mb-4">
+                <div className="relative">
+                  <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  </svg>
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="Ürün ara..."
+                    style={{ color: '#000000' }}
+                    className="w-full pl-10 pr-4 py-3 border-2 border-slate-200 rounded-xl focus:border-purple-400 focus:outline-none"
+                  />
                 </div>
               </div>
-            </div>
-          </div>
+
+              {/* Ürün Listesi */}
+              <div className="space-y-2 max-h-96 overflow-y-auto">
+                {filteredProducts.length === 0 ? (
+                  <div className="text-center py-8 text-slate-500">
+                    <p>{searchQuery ? "Ürün bulunamadı" : "Henüz ürün yok"}</p>
+                  </div>
+                ) : (
+                  filteredProducts.map((product) => (
+                    <label
+                      key={product.id}
+                      className={`flex items-center gap-4 p-4 border-2 rounded-xl cursor-pointer transition-all ${
+                        selectedProductIds.includes(product.id)
+                          ? "border-purple-500 bg-purple-50"
+                          : "border-slate-200 hover:border-purple-300 hover:bg-slate-50"
+                      }`}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={selectedProductIds.includes(product.id)}
+                        onChange={() => toggleProduct(product.id)}
+                        className="w-5 h-5 text-purple-600 rounded focus:ring-2 focus:ring-purple-400"
+                      />
+                      
+                      {/* Ürün Görseli */}
+                      <div className="w-16 h-16 rounded-lg overflow-hidden bg-slate-100 flex-shrink-0">
+                        {product.images && product.images[0] ? (
+                          <img
+                            src={product.images[0]}
+                            alt={product.title}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center text-2xl">
+                            🌸
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Ürün Bilgisi */}
+                      <div className="flex-1 min-w-0">
+                        <h4 className="font-semibold text-slate-900 truncate">
+                          {product.title}
+                        </h4>
+                        <p className="text-sm text-slate-600">
+                          ₺{product.price.toFixed(2)}
+                        </p>
+                      </div>
+
+                      {/* Seçili İşareti */}
+                      {selectedProductIds.includes(product.id) && (
+                        <div className="flex-shrink-0">
+                          <svg className="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                          </svg>
+                        </div>
+                      )}
+                    </label>
+                  ))
+                )}
+              </div>
+            </>
+          )}
         </div>
 
         {/* Butonlar */}

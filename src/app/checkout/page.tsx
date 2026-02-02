@@ -28,7 +28,7 @@ export default function CheckoutPage() {
     delivery_date: "",
     delivery_time: "09:00-12:00",
     note: "",
-    payment_method: "cash",
+    payment_method: "bank_transfer",
   });
 
   useEffect(() => {
@@ -108,67 +108,10 @@ export default function CheckoutPage() {
 
       const order = orderData.order;
 
-      // Ödeme yöntemine göre işlem
-      if (formData.payment_method === "card") {
-        try {
-          console.log('💳 Starting card payment for order:', order.id);
-          
-          const paymentResponse = await fetch("/api/payment/create", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              orderId: order.id,
-              totalAmount: getTotalPrice(),
-              customer: {
-                name: formData.customer_name,
-                email: formData.customer_email,
-                phone: formData.customer_phone,
-              },
-              shippingAddress: formData.delivery_address,
-              items: orderItems,
-            }),
-          });
+      // Sepeti temizle ve IBAN sayfasına yönlendir
+      clearCart();
+      window.location.href = "/checkout/payment-info/" + order.id;
 
-          const paymentData = await paymentResponse.json();
-
-          if (paymentData.status === "success" && paymentData.paymentPageUrl) {
-            window.location.href = paymentData.paymentPageUrl;
-          } else {
-            throw new Error(paymentData.error || "Ödeme sayfası oluşturulamadı");
-          }
-        } catch (paymentError: any) {
-          console.error("❌ Payment error:", paymentError);
-          (window as any).showToast?.("Ödeme hatası: " + paymentError.message, "error");
-          await supabase.from("orders").update({ status: "cancelled" }).eq("id", order.id);
-          setLoading(false);
-        }
-      } else {
-        // Nakit - Direkt onaylı
-        await supabase
-          .from("orders")
-          .update({ status: "confirmed" })
-          .eq("id", order.id);
-
-        // Stokları güncelle
-        for (const item of items) {
-          const { data: product } = await supabase
-            .from("products")
-            .select("stock")
-            .eq("id", item.id)
-            .single();
-
-          if (product && product.stock !== null) {
-            const newStock = product.stock - item.quantity;
-            await supabase
-              .from("products")
-              .update({ stock: Math.max(0, newStock) })
-              .eq("id", item.id);
-          }
-        }
-
-        clearCart();
-        window.location.href = "/checkout/success?orderId=" + order.id;
-      }
     } catch (err) {
       console.error("❌ Checkout error:", err);
       (window as any).showToast?.("Bir hata oluştu. Lütfen tekrar deneyin.", "error");
@@ -228,7 +171,7 @@ export default function CheckoutPage() {
         {/* Başlık */}
         <div className="mb-8 text-center">
           <h1 className="text-4xl md:text-5xl font-bold text-slate-900 mb-4">
-            Teslimat & Ödeme Bilgileri
+            Teslimat Bilgileri
           </h1>
           <p className="text-xl text-slate-600">
             Bilgilerinizi doldurun ve siparişinizi tamamlayın
@@ -386,7 +329,7 @@ export default function CheckoutPage() {
                 </div>
               </div>
 
-              {/* Ödeme Yöntemi */}
+              {/* Ödeme Yöntemi Bilgisi */}
               <div className="bg-white rounded-2xl p-8 border-2 border-slate-200">
                 <div className="flex items-center gap-3 mb-6">
                   <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
@@ -397,39 +340,34 @@ export default function CheckoutPage() {
                   <h2 className="text-2xl font-bold text-slate-900">Ödeme Yöntemi</h2>
                 </div>
 
-                <div className="space-y-3">
-                  <label className="flex items-center p-5 border-2 border-slate-200 rounded-xl cursor-pointer hover:border-purple-400 transition-all group">
-                    <input
-                      type="radio"
-                      name="payment_method"
-                      value="card"
-                      checked={formData.payment_method === "card"}
-                      onChange={handleInputChange}
-                      className="w-5 h-5 text-purple-600 cursor-pointer"
-                    />
-                    <div className="ml-4 flex-1">
-                      <div className="font-bold text-slate-900 text-lg flex items-center gap-2">
-                        💳 Kredi Kartı
-                        <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full font-bold">Güvenli</span>
+                <div className="p-6 border-2 border-purple-400 bg-purple-50 rounded-xl">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-12 h-12 bg-purple-600 rounded-full flex items-center justify-center">
+                      <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                    </div>
+                    <div>
+                      <div className="font-bold text-slate-900 text-xl">🏦 Banka Havalesi / EFT</div>
+                      <div className="text-sm text-slate-600 mt-1">Bir sonraki adımda IBAN bilgilerimizi göreceksiniz</div>
+                    </div>
+                  </div>
+                  
+                  <div className="bg-white rounded-lg p-4 border border-purple-200">
+                    <div className="flex items-start gap-2">
+                      <svg className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      <div className="text-sm text-slate-700">
+                        <p className="font-bold mb-1">Nasıl Çalışır?</p>
+                        <ul className="space-y-1 list-disc list-inside">
+                          <li>Siparişinizi oluşturduktan sonra IBAN bilgilerimizi göreceksiniz</li>
+                          <li>Banka havalesi veya EFT ile ödeme yapabilirsiniz</li>
+                          <li>Ödemeniz kontrol edildikten sonra siparişiniz hazırlanır</li>
+                        </ul>
                       </div>
-                      <div className="text-sm text-slate-600 mt-1">İyzico ile güvenli ödeme</div>
                     </div>
-                  </label>
-
-                  <label className="flex items-center p-5 border-2 border-slate-200 rounded-xl cursor-pointer hover:border-purple-400 transition-all group">
-                    <input
-                      type="radio"
-                      name="payment_method"
-                      value="cash"
-                      checked={formData.payment_method === "cash"}
-                      onChange={handleInputChange}
-                      className="w-5 h-5 text-purple-600 cursor-pointer"
-                    />
-                    <div className="ml-4 flex-1">
-                      <div className="font-bold text-slate-900 text-lg">💵 Kapıda Nakit Ödeme</div>
-                      <div className="text-sm text-slate-600 mt-1">Teslimat sırasında öde</div>
-                    </div>
-                  </label>
+                  </div>
                 </div>
               </div>
 
@@ -446,7 +384,7 @@ export default function CheckoutPage() {
                   </span>
                 ) : (
                   <span className="flex items-center justify-center gap-2">
-                    {formData.payment_method === "card" ? "Ödemeye Geç" : "Siparişi Tamamla"}
+                    Ödemeye Geç
                     <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
                     </svg>

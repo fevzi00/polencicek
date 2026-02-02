@@ -3,6 +3,17 @@ import { createClient } from '@supabase/supabase-js';
 
 export const runtime = 'nodejs';
 
+// Sipariş numarası oluştur
+function generateOrderNumber(): string {
+  const date = new Date();
+  const year = date.getFullYear().toString().slice(-2);
+  const month = (date.getMonth() + 1).toString().padStart(2, '0');
+  const day = date.getDate().toString().padStart(2, '0');
+  const random = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
+  
+  return `PC${year}${month}${day}${random}`; // Örnek: PC2502020123
+}
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
@@ -26,11 +37,17 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    console.log('📝 Creating order:', body);
+    // Sipariş numarası ekle
+    const orderData = {
+      ...body,
+      order_number: generateOrderNumber(),
+    };
+
+    console.log('📝 Creating order:', orderData);
 
     const { data: order, error } = await supabase
       .from('orders')
-      .insert(body)
+      .insert(orderData)
       .select()
       .single();
 
@@ -42,7 +59,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    console.log('✅ Order created:', order.id);
+    console.log('✅ Order created:', order.id, 'Order number:', order.order_number);
 
     return NextResponse.json({ order });
   } catch (error: any) {
