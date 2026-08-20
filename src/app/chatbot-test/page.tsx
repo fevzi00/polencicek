@@ -1,20 +1,38 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import Script from "next/script";
+import { Suspense } from "react";
 
-export default function ChatbotTestPage() {
-  const defaultUrl = process.env.NEXT_PUBLIC_CHATBOT_WIDGET_URL || "http://localhost:8080/static/widget.js";
-  const [widgetUrl, setWidgetUrl] = useState(defaultUrl);
-  const [activeUrl, setActiveUrl] = useState(defaultUrl);
+function ChatbotTestContent() {
+  const searchParams = useSearchParams();
+  const urlFromParam = searchParams.get("url");
+
+  const [widgetUrl, setWidgetUrl] = useState("");
+  const [activeUrl, setActiveUrl] = useState("");
+  const [isConnected, setIsConnected] = useState(false);
+
+  useEffect(() => {
+    if (urlFromParam) {
+      setWidgetUrl(urlFromParam);
+      setActiveUrl(urlFromParam);
+    }
+  }, [urlFromParam]);
 
   const handleApplyUrl = (e: React.FormEvent) => {
     e.preventDefault();
-    if (widgetUrl.trim()) {
-      setActiveUrl(widgetUrl.trim());
-      // Reload page to re-inject script cleanly if changed
-      window.location.href = `/chatbot-test?url=${encodeURIComponent(widgetUrl.trim())}`;
+    const trimmed = widgetUrl.trim();
+    if (!trimmed) return;
+
+    // Ensure URL ends with /static/widget.js
+    let finalUrl = trimmed;
+    if (!finalUrl.endsWith("/static/widget.js")) {
+      finalUrl = finalUrl.replace(/\/+$/, "") + "/static/widget.js";
     }
+
+    setActiveUrl(finalUrl);
+    setWidgetUrl(finalUrl);
   };
 
   return (
@@ -27,64 +45,103 @@ export default function ChatbotTestPage() {
             </div>
             <div>
               <h1 className="text-2xl font-bold text-slate-900">
-                Yapay Zeka Sohbet Asistanı — Canlı Test Sayfası
+                Yapay Zeka Sohbet Asistani — Canli Test Sayfasi
               </h1>
               <p className="text-sm text-slate-500">
-                Polen Çiçek & RAG Chatbot Entegrasyonu
+                RAG Chatbot Entegrasyonu
               </p>
             </div>
           </div>
 
           <p className="text-slate-600 mb-6 leading-relaxed">
-            Bu test sayfası, RAG (Retrieval-Augmented Generation) mimarisiyle çalışan 
-            yapay zeka sohbet asistanını canlı web sitemiz üzerinde test etmek için oluşturulmuştur.
+            Bu test sayfasi, RAG (Retrieval-Augmented Generation) mimarisiyle calisan
+            yapay zeka sohbet asistanini canli web sitemiz uzerinde test etmek icin olusturulmustur.
           </p>
 
+          {!activeUrl && (
+            <div className="bg-amber-50 border border-amber-200 rounded-xl p-5 mb-6">
+              <h2 className="font-semibold text-amber-900 mb-2">
+                Baglanti Gerekli
+              </h2>
+              <p className="text-sm text-amber-800">
+                Chatbot widget&apos;ini yuklemek icin asagidaki kutuya sunucu adresinizi girin.
+                Ornek: <code className="bg-amber-100 px-1.5 py-0.5 rounded text-xs">https://abc123.ngrok-free.app</code>
+              </p>
+            </div>
+          )}
+
+          {activeUrl && (
+            <div className="bg-green-50 border border-green-200 rounded-xl p-5 mb-6">
+              <h2 className="font-semibold text-green-900 mb-2">
+                Widget Yuklendi
+              </h2>
+              <p className="text-sm text-green-800">
+                Sag alt kosedeki <strong>mor sohbet balonuna</strong> tiklayarak asistanla konusmaya baslayabilirsiniz.
+              </p>
+            </div>
+          )}
+
           <div className="bg-purple-50 border border-purple-100 rounded-xl p-5 mb-6">
-            <h2 className="font-semibold text-purple-950 mb-2 flex items-center gap-2">
-              💡 Test Talimatları
+            <h2 className="font-semibold text-purple-950 mb-2">
+              Test Talimatlari
             </h2>
             <ul className="text-sm text-purple-900 space-y-1.5 list-disc list-inside">
-              <li>Ekranın sağ alt köşesindeki <strong>mor sohbet balonuna</strong> tıklayın.</li>
-              <li>Sohbet botuna ürünler, çiçek bakımı veya sipariş durumları hakkında sorular sorun.</li>
-              <li>Yanıtların altındaki doküman kaynaklarını (citations) kontrol edin.</li>
+              <li>Bilgisayarinizda <code className="bg-purple-100 px-1 rounded text-xs">ngrok http 8080</code> komutunu calistirin.</li>
+              <li>Ngrok&apos;un verdigi HTTPS adresini asagiya yapisitirin.</li>
+              <li>Sag alt kosedeki <strong>mor sohbet balonuna</strong> tiklayin.</li>
             </ul>
           </div>
 
           <form onSubmit={handleApplyUrl} className="bg-slate-50 border border-slate-200 rounded-xl p-4">
             <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-2">
-              Widget Script Sunucu Adresi
+              Chatbot Sunucu Adresi (Ngrok / Cloudflare Tunnel)
             </label>
             <div className="flex gap-2">
               <input
                 type="text"
                 value={widgetUrl}
                 onChange={(e) => setWidgetUrl(e.target.value)}
-                placeholder="https://xxxx.ngrok-free.app/static/widget.js"
-                className="flex-1 px-3.5 py-2 bg-white border border-slate-300 rounded-lg text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                placeholder="https://abc123.ngrok-free.app"
+                className="flex-1 px-3.5 py-2.5 bg-white border border-slate-300 rounded-lg text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-500"
               />
               <button
                 type="submit"
-                className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-sm font-medium transition-colors"
+                className="px-5 py-2.5 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-sm font-medium transition-colors whitespace-nowrap"
               >
-                Guncelle & Test Et
+                Baglan
               </button>
             </div>
             <p className="text-xs text-slate-400 mt-2">
-              Ngrok, Cloudflare Tunnel veya canlı sunucu adresinizi girdiğinizde widget bu adresten yüklenecektir.
+              Adres girildiginde widget otomatik olarak yuklenecektir. /static/widget.js otomatik eklenir.
             </p>
           </form>
         </div>
       </div>
 
-      {/* Inject Chatbot Widget Script */}
-      <Script
-        key={activeUrl}
-        src={activeUrl}
-        strategy="afterInteractive"
-        onLoad={() => console.log("Chatbot Widget script successfully loaded on polencicek.com!")}
-        onError={(e) => console.error("Chatbot Widget script failed to load:", e)}
-      />
+      {/* Inject Chatbot Widget Script only when URL is set */}
+      {activeUrl && (
+        <Script
+          key={activeUrl}
+          src={activeUrl}
+          strategy="afterInteractive"
+          onLoad={() => {
+            console.log("Chatbot Widget loaded successfully from:", activeUrl);
+            setIsConnected(true);
+          }}
+          onError={(e) => {
+            console.error("Chatbot Widget failed to load:", e);
+            setIsConnected(false);
+          }}
+        />
+      )}
     </div>
+  );
+}
+
+export default function ChatbotTestPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-slate-50 flex items-center justify-center"><p>Yukleniyor...</p></div>}>
+      <ChatbotTestContent />
+    </Suspense>
   );
 }
